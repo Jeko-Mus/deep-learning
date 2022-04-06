@@ -4,6 +4,7 @@ import data_handler as dh           # yes, you can import your code. Cool!
 import torch
 import torch.optim as optim
 import torch.nn as nn
+from torch.utils.data import DataLoader
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -29,6 +30,32 @@ for epoch in range(n_epochs):
     loss = loss_func(y_train, y_hat)
     loss.backward()    
     optimizer.step()
+print(model.state_dict())
     
+dh.to_batches(x_train, x_test, y_train, y_test, 20)
 
+losses = []
+val_losses = []
+train_step = make_train_step(model, loss_fn, optimizer)
+
+for epoch in range(n_epochs):
+    for x_batch, y_batch in train_loader:
+        x_batch = x_batch.to(device)
+        y_batch = y_batch.to(device)
+
+        loss = train_step(x_batch, y_batch)
+        losses.append(loss)
+        
+    with torch.no_grad():
+        for x_val, y_val in val_loader:
+            x_val = x_val.to(device)
+            y_val = y_val.to(device)
+            
+            model.eval()
+
+            yhat = model(x_val)
+            val_loss = loss_fn(y_val, yhat)
+            val_losses.append(val_loss.item())
+
+print(model.state_dict())
 # Remember to validate your model: with torch.no_grad() ...... model.eval .........model.train
