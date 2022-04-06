@@ -6,13 +6,22 @@ from torch import nn
 # YOUR CODE HERE
 
 class Net(nn.Module):
+    
+    # Defining the layers
     def __init__(self):
         super(Net, self).__init__()
-        self.layer = torch.nn.Linear(8, 1)
+        self.fc1 = nn.Linear(8, 16)
+        self.fc2 = nn.Linear(16, 8)
+        self.fc3 = nn.Linear(8, 1)
         
+    # Forward pass through
     def forward(self, x):
-        x = self.layer(x)
+        x = self.fc1(x)
+        x = F.relu(x)
+        x = self.fc2(x)
+        x = F.relu(x)
+        x = self.fc3(x)
         return x
 
 model = Net()
-print(model)
+model
